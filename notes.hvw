@@ -1,0 +1,29 @@
+
+llvm:
+I had to edit ~/.emscripten to set LLVM_ROOT
+
+zlib:
+I had to use --static on zlib:
+emconfigure configure --static
+
+
+I had to add -Itiff-4.0.3/libtiff 
+emcc -Itiff-4.0.3/libtiff  -o tiff.raw.js     --pre-js pre.js     --post-js post.js     -s EXPORTED_FUNCTIONS="[""'_TIFFOpen',""'_TIFFClose',""'_TIFFGetField',""'_TIFFReadRGBAImage',""'_TIFFReadRGBAImageOriented',""'_TIFFSetDirectory',""'_TIFFCurrentDirectory',""'_TIFFReadDirectory',""'__TIFFmalloc',""'__TIFFfree',""'_GetField',""'FS']"     export.c     tiff-4.0.3/libtiff/.libs/libtiff.a     zlib-1.2.8/libz.
+
+# need tsc
+$ npm install -g typescript
+
+
+--- on ubuntu 14.04, all as root:
+apt-get install node
+apt-get install npm
+npm install -g typescript
+apt-get install closure-compiler
+apt-get install emscripten
+
+run emcc  once so it will create ~/.emscripten. 
+  LLVM_ROOT       = /usr/bin
+  PYTHON          = /usr/bin/python2
+  NODE_JS         = /usr/sbin/node
+  EMSCRIPTEN_ROOT = /usr/share/emscripten
+
