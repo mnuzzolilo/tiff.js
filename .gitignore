@@ -9,4 +9,5 @@ zlib-*
 .\#*
 
 tiff.raw.js
-tiff_tag.*
+tiff_tag.ts
+tiff.raw.js.mem
