@@ -3,12 +3,24 @@
 export EMCC_CFLAGS="-O2"
 ZLIB_PKGVER=1.2.8
 LIBTIFF_PKGVER=4.0.3
+LIBZ_STATIC=
+OS=`uname`
+
+if [ $OS == 'Darwin' ]
+    then
+        export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin
+        LIBZ_STATIC=--static
+        echo setting staitc flag for libz: $LIBZ_STATIC
+fi
+
+# check prerequisite: tsc
+command -v tsc >/dev/null 2>&1 || { echo >&2 "Build requires the tsc command (Typescript) but it's not installed.  Aborting."; exit 1; }
 
 # build zlib
 wget http://zlib.net/current/zlib-${ZLIB_PKGVER}.tar.gz
 tar xf zlib-${ZLIB_PKGVER}.tar.gz
 cd zlib-${ZLIB_PKGVER}
-emconfigure ./configure
+emconfigure ./configure $LIBZ_STATIC
 emmake make
 cd ..
 
@@ -24,6 +36,7 @@ emmake make
 cd ..
 
 emcc -o tiff.raw.js \
+    -I tiff-${LIBTIFF_PKGVER}/libtiff \
     --pre-js pre.js \
     --post-js post.js \
     -s EXPORTED_FUNCTIONS="["\
