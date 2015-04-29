@@ -86,3 +86,6 @@ closure-compiler \
     --js_output_file=tiff.min.js \
     --language_in ECMASCRIPT5 \
     --output_wrapper="(function() {%output%})();"
+
+cp tiff.min.js tiff.raw.js.mem html
+
