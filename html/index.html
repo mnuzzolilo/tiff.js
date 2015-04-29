@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>tiff test</title>
+    <script src="tiff.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"
+            data-dojo-config="async: true"></script>
+  </head>
+  <body>
+    <script>
+     var file1 = 'rgb-3c-8b.tiff';
+     var file2 = 'CDD22.tif';
+     require([
+       'dojo/dom',
+       'dojo/dom-construct',
+       'dojo/request'
+     ], function (dom, domConstruct, request) {
+       Tiff.initialize({TOTAL_MEMORY: 1024*1024*64});
+       
+       request.get (
+         file2,{ handleAs: 'arraybuffer'}).then (function (response){
+           var tiff = new Tiff({buffer: response});
+           var canvas = tiff.toCanvas();
+           document.body.appendChild(canvas);
+         });
+
+     });
+     
+
+    </script>
+  </body>
+</html>
