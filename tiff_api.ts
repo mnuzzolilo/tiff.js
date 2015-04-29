@@ -162,7 +162,7 @@ declare var process: any;
 declare var require: any;
 declare var module: any;
 declare var define: any;
-declare var self: any;
+declare var self: Window;
 
 if (typeof process === 'object' && typeof require === 'function') { // NODE
   module['exports'] = Tiff;
