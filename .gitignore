@@ -1,13 +1,15 @@
 *~
 *.map
 a.out.*
-
 tiff-*
 zlib-*
 *.o
 \#*
 .\#*
-
 tiff.raw.js
 tiff_tag.ts
 tiff.raw.js.mem
+tiff.d.ts
+tiff.js
+tiff.min.js
+.DS_Store
