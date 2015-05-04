@@ -67,8 +67,8 @@ class Tiff {
                                            ['number'], [width * height * 4])
     var result: number = Tiff.Module.ccall('TIFFReadRGBAImageOriented', 'number', [
       'number', 'number', 'number', 'number', 'number', 'number'], [
-      this._tiffPtr, width, height, raster, 1, 0
-    ]);
+        this._tiffPtr, width, height, raster, 1, 0
+      ]);
 
     if (result === 0) {
       throw new Tiff.Exception('The function TIFFReadRGBAImageOriented returns NULL');
@@ -89,8 +89,8 @@ class Tiff {
                                            ['number'], [width * height * 4])
     var result: number = Tiff.Module.ccall('TIFFReadRGBAImageOriented', 'number', [
       'number', 'number', 'number', 'number', 'number', 'number'], [
-      this._tiffPtr, width, height, raster, 1, 0
-    ]);
+        this._tiffPtr, width, height, raster, 1, 0
+      ]);
 
     if (result === 0) {
       throw new Tiff.Exception('The function TIFFReadRGBAImageOriented returns NULL');
