@@ -17,7 +17,7 @@
        Tiff.initialize({TOTAL_MEMORY: 1024*1024*32});
        
        request.get (
-         file1,{ handleAs: 'arraybuffer'}).then (function (response){
+         file2,{ handleAs: 'arraybuffer'}).then (function (response){
            var tiff = new Tiff({buffer: response});
            var arrays = tiff.toArrays();
 
