@@ -39,16 +39,18 @@ if [ MUST_PATCH == 1 ]; then
     # see: https://github.com/kripken/emscripten/issues/662
     patch -p0 < ../tif_open.c.patch
     patch -p0 < ../tiff.h.patch
+    emconfigure ./configure --enable-shared
 fi
 
-emconfigure ./configure --enable-shared
 emmake make
 cd ..
 
 emcc -o tiff.raw.js \
+    $EMCC_CFLAGS \
     -I tiff-${LIBTIFF_PKGVER}/libtiff \
     --pre-js pre.js \
     --post-js post.js \
+    -s ALLOW_MEMORY_GROWTH=1 \
     -s EXPORTED_FUNCTIONS="["\
 "'_TIFFOpen',"\
 "'_TIFFClose',"\
@@ -87,5 +89,5 @@ closure-compiler \
     --language_in ECMASCRIPT5 \
     --output_wrapper="(function() {%output%})();"
 
-cp tiff.min.js tiff.raw.js.mem html
+cp tiff.min.js tiff.js tiff.raw.js.mem html
 
