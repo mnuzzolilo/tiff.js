@@ -19,10 +19,26 @@
        request.get (
          file1,{ handleAs: 'arraybuffer'}).then (function (response){
            var tiff = new Tiff({buffer: response});
-           var canvas = tiff.toCanvas();
+           var arrays = tiff.toArrays();
 
-           document.body.appendChild(canvas);
+           arrays.forEach (function (array){
+             var canvas = makeCanvasFromImage(array.image, array.width, array.height);
+             document.body.appendChild(canvas);
+           }, this);
+           
          });
+
+
+       function makeCanvasFromImage(image, width, height){
+         var canvas = document.createElement('canvas');
+         var context = canvas.getContext('2d');
+         canvas.width = width;
+         canvas.height = height;
+         var imageData = context.createImageData(width, height);
+         imageData.data.set(image);
+         context.putImageData(imageData, 0, 0);
+         return canvas;         
+       }
 
      });
      

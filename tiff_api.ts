@@ -107,6 +107,44 @@ class Tiff {
     Tiff.Module.ccall('free', 'number', ['number'], [raster]);
     return canvas;
   }
+  
+  toArrays(): Object[] {
+    var width = this.width();
+    var height = this.height();
+    var maxCanvasHeight = 4096;
+    var numCanvases = Math.ceil (height/maxCanvasHeight);
+    
+    var raster: number = Tiff.Module.ccall('_TIFFmalloc', 'number',
+                                           ['number'], [width * height * 4])
+    var result: number = Tiff.Module.ccall('TIFFReadRGBAImageOriented', 'number', [
+      'number', 'number', 'number', 'number', 'number', 'number'], [
+        this._tiffPtr, width, height, raster, 1, 0
+      ]);
+
+    if (result === 0) {
+      throw new Tiff.Exception('The function TIFFReadRGBAImageOriented returns NULL');
+    }
+    var arrayOfArrays = [];
+    for (var i=0; i< numCanvases; i++){
+
+      var startY = i * maxCanvasHeight;
+      var endY = Math.min(height, startY + maxCanvasHeight);
+      var thisHeight = endY - startY;
+      
+      var start = startY * width;
+      var end =  endY * width;
+      
+      var image = Tiff.Module.HEAPU8.subarray(raster + start*4, raster + end * 4);
+      arrayOfArrays.push({
+        image: image,
+        width: width,
+        height: thisHeight
+      });
+    }
+    
+    Tiff.Module.ccall('free', 'number', ['number'], [raster]);
+    return arrayOfArrays;
+  }
 
   toDataURL(): string {
     return this.toCanvas().toDataURL();

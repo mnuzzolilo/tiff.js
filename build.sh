@@ -89,5 +89,5 @@ closure-compiler \
     --language_in ECMASCRIPT5 \
     --output_wrapper="(function() {%output%})();"
 
-cp tiff.min.js tiff.js tiff.raw.js.mem html
+#cp tiff.min.js tiff.js tiff.raw.js.mem html
 
