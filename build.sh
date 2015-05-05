@@ -51,6 +51,8 @@ emcc -o tiff.raw.js \
     --pre-js pre.js \
     --post-js post.js \
     -s ALLOW_MEMORY_GROWTH=1 \
+    -s TOTAL_MEMORY=33554432 \
+    --memory-init-file 0 \
     -s EXPORTED_FUNCTIONS="["\
 "'_TIFFOpen',"\
 "'_TIFFClose',"\
