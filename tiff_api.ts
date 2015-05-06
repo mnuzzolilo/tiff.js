@@ -23,6 +23,10 @@ class Tiff {
     }
   }
 
+  destroy(){
+    Tiff.Module.FS.unlink( '/' + this._filename);
+  }
+  
   width(): number {
     return this.getField(Tiff.Tag.IMAGEWIDTH);
   }
