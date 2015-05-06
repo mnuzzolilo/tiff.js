@@ -22,7 +22,7 @@ declare module Module {
 
   module FS {
     interface Object {}
-    function deleteFile(path: string): void;
+    function unlink(path: string): void;
     function createFolder(parent: string, name: string,
                           canRead: boolean, canWrite: boolean): Object
     function createFolder(parent: Object, name: string,
@@ -32,9 +32,9 @@ declare module Module {
     function createPath(parent: Object, name: string,
                         canRead: boolean, canWrite: boolean): Object;
     function createDataFile(parent: string, name: string, data: any,
-                            canRead: boolean, canWrite: boolean): Object;
+                            canRead: boolean, canWrite: boolean, canOwn: boolean): Object;
     function createDataFile(parent: Object, name: string, data: any,
-                            canRead: boolean, canWrite: boolean): Object;
+                            canRead: boolean, canWrite: boolean, canOwn: boolean): Object;
     function createLazyFile(parent: string, name: string, url: string,
                             canRead: boolean, canWrite: boolean): Object;
     function createLazyFile(parent: Object, name: string, url: string,
