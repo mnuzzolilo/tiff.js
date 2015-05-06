@@ -164,16 +164,16 @@ class Tiff {
                                              ['number'],
                                              [this._tiffPtr ]);
 
-    var raster: number = Tiff.Module.ccall('_TIFFmalloc', 'number',
-                                           ['number'], [width * rowsPerStrip * 4])
+     try {
+       var raster: number = Tiff.Module.ccall('_TIFFmalloc', 'number',
+                                              ['number'], [width * rowsPerStrip * 4])
 
-    var flipped: number = Tiff.Module.ccall('_TIFFmalloc', 'number',
-                                           ['number'], [width * rowsPerStrip * 4])
-    try {
-      this.loopOverStrips ( width, rowsPerStrip, numCanvases, raster, flipped, eachImageHandler);
+       var flipped: number = Tiff.Module.ccall('_TIFFmalloc', 'number',
+                                               ['number'], [width * rowsPerStrip * 4])
+       this.loopOverStrips ( width, rowsPerStrip, numCanvases, raster, flipped, eachImageHandler);
     } finally {
-      Tiff.Module.ccall('free', 'number', ['number'], [flipped]);
-      Tiff.Module.ccall('free', 'number', ['number'], [raster]);
+      flipped && Tiff.Module.ccall('_TIFFfree', 'number', ['number'], [flipped]);
+      raster && Tiff.Module.ccall('_TIFFfree', 'number', ['number'], [raster]);
     }
 
   }
