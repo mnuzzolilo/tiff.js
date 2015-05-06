@@ -193,7 +193,7 @@ class Tiff {
 
   private static createFileSystemObjectFromBuffer(buffer: ArrayBuffer): string {
     var filename = Tiff.createUniqueFileName();
-    Tiff.Module.FS.createDataFile('/', filename, new Uint8Array(buffer), true, false);
+    Tiff.Module.FS.createDataFile('/', filename, new Uint8Array(buffer), true, false, true);
     return filename;
   }
 }
