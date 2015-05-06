@@ -127,7 +127,7 @@ class Tiff {
 
   // I pulled this loop out to permit V8 to optimize
   // try/catch deoptimizes
-  loopOverStrips (width, rowsPerStrip, numCanvases, raster, flipped, eachImageHandler){
+  loopOverStrips (width, height, rowsPerStrip, numCanvases, raster, flipped, eachImageHandler){
     for (var iStrip=0; iStrip< numCanvases; iStrip++){
 
       var result: number = Tiff.Module.ccall('TIFFReadRGBAStrip', 'number',
@@ -148,7 +148,7 @@ class Tiff {
         flippedImage.set(src, iRow * width * 4);
       }
         
-      eachImageHandler(flippedImage, iStrip * rowsPerStrip, width, rowsPerStrip);
+      eachImageHandler(flippedImage, iStrip * rowsPerStrip, width, Math.min(rowsPerStrip, height - iRow * rowsPerStrip));
         
     }
   }
@@ -170,7 +170,7 @@ class Tiff {
 
        var flipped: number = Tiff.Module.ccall('_TIFFmalloc', 'number',
                                                ['number'], [width * rowsPerStrip * 4])
-       this.loopOverStrips ( width, rowsPerStrip, numCanvases, raster, flipped, eachImageHandler);
+       this.loopOverStrips ( width, height, rowsPerStrip, numCanvases, raster, flipped, eachImageHandler);
     } finally {
       flipped && Tiff.Module.ccall('_TIFFfree', 'number', ['number'], [flipped]);
       raster && Tiff.Module.ccall('_TIFFfree', 'number', ['number'], [raster]);
