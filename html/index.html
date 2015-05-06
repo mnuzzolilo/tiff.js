@@ -19,16 +19,15 @@
        request.get (
          file2,{ handleAs: 'arraybuffer'}).then (function (response){
            var tiff = new Tiff({buffer: response});
-           var arrays = tiff.toArrays();
-
-           arrays.forEach (function (array){
-             var canvas = makeCanvasFromImage(array.image, array.width, array.height);
-             document.body.appendChild(canvas);
-           }, this);
-           
+           var arrays = tiff.toArrays(callback);
          });
 
+       function callback(image, y, width, height){
+         var canvas = makeCanvasFromImage(image, width, height);
+         document.body.appendChild(canvas);
+       }
 
+ 
        function makeCanvasFromImage(image, width, height){
          var canvas = document.createElement('canvas');
          var context = canvas.getContext('2d');

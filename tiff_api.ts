@@ -31,6 +31,19 @@ class Tiff {
     return this.getField(Tiff.Tag.IMAGELENGTH);
   }
 
+  tileWidth(): number {
+    return this.getField(Tiff.Tag.TILEWIDTH);
+  }
+
+  tileHeight(): number {
+    return this.getField(Tiff.Tag.TILELENGTH);
+  }
+
+  
+  rowsPerStrip(): number {
+    return this.getField(Tiff.Tag.ROWSPERSTRIP);
+  }
+
   currentDirectory(): number {
     return Tiff.Module.ccall('TIFFCurrentDirectory', 'number',
                              ['number'], [this._tiffPtr]);
@@ -107,43 +120,55 @@ class Tiff {
     Tiff.Module.ccall('free', 'number', ['number'], [raster]);
     return canvas;
   }
+
+  // I pulled this loop out to permit V8 to optimize
+  // try/catch deoptimizes
+  loopOverStrips (width, rowsPerStrip, numCanvases, raster, flipped, eachImageHandler){
+    for (var iStrip=0; iStrip< numCanvases; iStrip++){
+
+      var result: number = Tiff.Module.ccall('TIFFReadRGBAStrip', 'number',
+                                             ['number', 'number', 'number'],
+                                             [this._tiffPtr, iStrip * rowsPerStrip, raster]);
+      
+      if (result === 0) {
+        throw new Tiff.Exception('The function TIFFReadRGBAStrip returns NULL');
+      }
+      
+      var flippedImage = Tiff.Module.HEAPU8.subarray(flipped, flipped + width * rowsPerStrip * 4);
+      // flip the image in y direction
+      for (var iRow =0; iRow < rowsPerStrip; iRow++){
+        var a1 = raster + (rowsPerStrip - iRow -1) * width  * 4;
+        var a2 = a1 + width * 4;
+        var src = Tiff.Module.HEAPU8.subarray(a1, a2);
+
+        flippedImage.set(src, iRow * width * 4);
+      }
+        
+      eachImageHandler(flippedImage, iStrip * rowsPerStrip, width, rowsPerStrip);
+        
+    }
+  }
   
-  toArrays(): Object[] {
+  toArrays(eachImageHandler) {
     var width = this.width();
     var height = this.height();
-    var maxCanvasHeight = 4096;
-    var numCanvases = Math.ceil (height/maxCanvasHeight);
     
+    var rowsPerStrip:number = this.rowsPerStrip();
+    var numCanvases = Math.ceil (height/rowsPerStrip);
+   
+    var stripSize:number = Tiff.Module.ccall('TIFFStripSize', 'number',
+                                             ['number'],
+                                             [this._tiffPtr ]);
+
     var raster: number = Tiff.Module.ccall('_TIFFmalloc', 'number',
-                                           ['number'], [width * height * 4])
+                                           ['number'], [width * rowsPerStrip * 4])
+
+    var flipped: number = Tiff.Module.ccall('_TIFFmalloc', 'number',
+                                           ['number'], [width * rowsPerStrip * 4])
     try {
-      var result: number = Tiff.Module.ccall('TIFFReadRGBAImageOriented', 'number', [
-        'number', 'number', 'number', 'number', 'number', 'number'], [
-          this._tiffPtr, width, height, raster, 1, 0
-        ]);
-
-      if (result === 0) {
-        throw new Tiff.Exception('The function TIFFReadRGBAImageOriented returns NULL');
-      }
-      var arrayOfArrays = [];
-      for (var i=0; i< numCanvases; i++){
-
-        var startY = i * maxCanvasHeight;
-        var endY = Math.min(height, startY + maxCanvasHeight);
-        var thisHeight = endY - startY;
-        
-        var start = startY * width;
-        var end =  endY * width;
-        
-        var image = Tiff.Module.HEAPU8.subarray(raster + start*4, raster + end * 4);
-        arrayOfArrays.push({
-          image: image,
-          width: width,
-          height: thisHeight
-        });
-        return arrayOfArrays;
-      }
+      this.loopOverStrips ( width, rowsPerStrip, numCanvases, raster, flipped, eachImageHandler);
     } finally {
+      Tiff.Module.ccall('free', 'number', ['number'], [flipped]);
       Tiff.Module.ccall('free', 'number', ['number'], [raster]);
     }
 
@@ -189,6 +214,9 @@ module Tiff {
 // for closure compiler
 Tiff.prototype['width'] = Tiff.prototype.width;
 Tiff.prototype['height'] = Tiff.prototype.height;
+Tiff.prototype['tileWidth'] = Tiff.prototype.tileWidth;
+Tiff.prototype['tileHeight'] = Tiff.prototype.tileHeight;
+Tiff.prototype['rowsPerStrip'] = Tiff.prototype.rowsPerStrip;
 Tiff.prototype['currentDirectory'] = Tiff.prototype.currentDirectory;
 Tiff.prototype['countDirectory'] = Tiff.prototype.countDirectory;
 Tiff.prototype['setDirectory'] = Tiff.prototype.setDirectory;

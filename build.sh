@@ -50,15 +50,19 @@ emcc -o tiff.raw.js \
     -I tiff-${LIBTIFF_PKGVER}/libtiff \
     --pre-js pre.js \
     --post-js post.js \
-    -s ALLOW_MEMORY_GROWTH=1 \
-    -s TOTAL_MEMORY=33554432 \
+    -s ALLOW_MEMORY_GROWTH=0 \
+    -s TOTAL_MEMORY=134217728 \
     --memory-init-file 0 \
     -s EXPORTED_FUNCTIONS="["\
+"'_TIFFReadEncodedStrip',"\
+"'_TIFFNumberOfStrips',"\
+"'_TIFFStripSize',"\
 "'_TIFFOpen',"\
 "'_TIFFClose',"\
 "'_TIFFGetField',"\
 "'_TIFFReadRGBAImage',"\
 "'_TIFFReadRGBAImageOriented',"\
+"'_TIFFReadRGBAStrip',"\
 "'_TIFFSetDirectory',"\
 "'_TIFFCurrentDirectory',"\
 "'_TIFFReadDirectory',"\
