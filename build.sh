@@ -39,8 +39,12 @@ if [ MUST_PATCH == 1 ]; then
     # see: https://github.com/kripken/emscripten/issues/662
     patch -p0 < ../tif_open.c.patch
     patch -p0 < ../tiff.h.patch
+
+fi
+if [ ! -e Makefile ]; then
     emconfigure ./configure --enable-shared
 fi
+
 
 emmake make
 cd ..
